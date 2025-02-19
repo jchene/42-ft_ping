@@ -12,8 +12,6 @@
 
 #include "ping.h"
 
-typedef struct option t_long_options;
-
 static t_long_options *get_long_opts()
 {
 	static t_long_options long_opts[] = {
@@ -74,13 +72,11 @@ t_options parse_options(int argc, char **argv)
 	opterr = 0;
 	while ((opt_char = getopt_long(argc, argv, "?vnw:W:s:L:", long_options, &option_index)) != -1){
 		handle_option(&opts, opt_char, argv);
-		if (opts.opt_error)
-			break;
+		if (opts.help || opts.opt_error)
+			return opts;
 	}
-	if (!opts.opt_error){
-		opts.host = argv[optind];
-		if (!opts.host)
-			opts.opt_error = ERR_MISSING_HOST;
-	}
+	opts.host = argv[optind];
+	if (!opts.host)
+		opts.opt_error = ERR_MISSING_HOST;
 	return opts;
 }

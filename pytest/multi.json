@@ -28,8 +28,16 @@
 				"./ft_ping --timeout 76 -n 8.8.8.8",
 				"./ft_ping -n --timeout 77 8.8.8.8",
 				"./ft_ping -v -n -w 78 -W 79 -s 80 -L 81 8.8.8.8",
+				"./ft_ping --verbose --numeric --timeout 82 --linger 83 --size 84 --ttl 85 8.8.8.8",
+				"./ft_ping -v --numeric -w 82 --linger 83 -s 84 --ttl 85 8.8.8.8",
+				"./ft_ping 8.8.8.8 -v -n -w 78 -W 79 -s 80 -L 81",
+				"./ft_ping -v 8.8.8.8 -n -w 78 -W 79 -s 80 -L 81",
+				"./ft_ping -v -n 8.8.8.8 -w 78 -W 79 -s 80 -L 81",
 				"./ft_ping -v -n -w 78 8.8.8.8 -W 79 -s 80 -L 81",
-				"./ft_ping --verbose --numeric --timeout 82 --linger 83 --size 84 --ttl 85 8.8.8.8"
+				"./ft_ping -v -n -w 78 -W 79 8.8.8.8 -s 80 -L 81",
+				"./ft_ping -v -n -w 78 -W 79 -s 80 8.8.8.8 -L 81",
+				"./ft_ping --verbose --numeric --timeout 82 8.8.8.8 --linger 83 --size 84 --ttl 85",
+				"./ft_ping -v --numeric -w 82 8.8.8.8 --linger 83 -s 84 --ttl 85"
 			]
 		},
 		{
@@ -37,6 +45,7 @@
 			"expected_output": "ft_ping: invalid option -- '-z'\nTry './ft_ping --help' for more information.\n",
 			"commands": [
 				"./ft_ping -z",
+				"./ft_ping 8.8.8.8 -z",
 				"./ft_ping -z 8.8.8.8",
 				"./ft_ping -? -z 8.8.8.8",
 				"./ft_ping --help -z 8.8.8.8",
@@ -61,8 +70,16 @@
 				"./ft_ping --timeout 76 -n -z 8.8.8.8",
 				"./ft_ping -n --timeout 77 -z 8.8.8.8",
 				"./ft_ping -v -n -w 78 -W 79 -s 80 -L 81 -z 8.8.8.8",
+				"./ft_ping --verbose --numeric --timeout 82 --linger 83 --size 84 --ttl 85 -z 8.8.8.8",
+				"./ft_ping -v --numeric -w 82 --linger 83 -s 84 --ttl 85 -z 8.8.8.8",
+				"./ft_ping -z 8.8.8.8 -v -n -w 78 -W 79 -s 80 -L 81",
+				"./ft_ping -v -z 8.8.8.8 -n -w 78 -W 79 -s 80 -L 81",
+				"./ft_ping -v -n -z 8.8.8.8 -w 78 -W 79 -s 80 -L 81",
 				"./ft_ping -v -n -w 78 -z 8.8.8.8 -W 79 -s 80 -L 81",
-				"./ft_ping --verbose --numeric --timeout 82 --linger 83 --size 84 --ttl 85 -z 8.8.8.8"
+				"./ft_ping -v -n -w 78 -W 79 -z 8.8.8.8 -s 80 -L 81",
+				"./ft_ping -v -n -w 78 -W 79 -s 80 -z 8.8.8.8 -L 81",
+				"./ft_ping --verbose --numeric --timeout 82 -z 8.8.8.8 --linger 83 --size 84 --ttl 85",
+				"./ft_ping -v --numeric -w 82 -z 8.8.8.8 --linger 83 -s 84 --ttl 85"
 			]
 		},
 		{
@@ -70,6 +87,7 @@
 			"expected_output": "ft_ping: invalid option -- '--coucou'\nTry './ft_ping --help' for more information.\n",
 			"commands": [
 				"./ft_ping --coucou",
+				"./ft_ping 8.8.8.8 --coucou",
 				"./ft_ping --coucou 8.8.8.8",
 				"./ft_ping -? --coucou 8.8.8.8",
 				"./ft_ping --help --coucou 8.8.8.8",
@@ -94,40 +112,56 @@
 				"./ft_ping --timeout 76 -n --coucou 8.8.8.8",
 				"./ft_ping -n --timeout 77 --coucou 8.8.8.8",
 				"./ft_ping -v -n -w 78 -W 79 -s 80 -L 81 --coucou 8.8.8.8",
+				"./ft_ping --verbose --numeric --timeout 82 --linger 83 --size 84 --ttl 85 --coucou 8.8.8.8",
+				"./ft_ping -v --numeric -w 82 --linger 83 -s 84 --ttl 85 --coucou 8.8.8.8",
+				"./ft_ping --coucou 8.8.8.8 -v -n -w 78 -W 79 -s 80 -L 81",
+				"./ft_ping -v --coucou 8.8.8.8 -n -w 78 -W 79 -s 80 -L 81",
+				"./ft_ping -v -n --coucou 8.8.8.8 -w 78 -W 79 -s 80 -L 81",
 				"./ft_ping -v -n -w 78 --coucou 8.8.8.8 -W 79 -s 80 -L 81",
-				"./ft_ping --verbose --numeric --timeout 82 --linger 83 --size 84 --ttl 85 --coucou 8.8.8.8"
+				"./ft_ping -v -n -w 78 -W 79 --coucou 8.8.8.8 -s 80 -L 81",
+				"./ft_ping -v -n -w 78 -W 79 -s 80 --coucou 8.8.8.8 -L 81",
+				"./ft_ping --verbose --numeric --timeout 82 --coucou 8.8.8.8 --linger 83 --size 84 --ttl 85",
+				"./ft_ping -v --numeric -w 82 --coucou 8.8.8.8 --linger 83 -s 84 --ttl 85"
 			]
 		},
 		{
 			"_comment": "Missing host",
 			"expected_output": "ft_ping: missing host operand\nTry './ft_ping --help' for more information.",
 			"commands": [
-				"./ft_ping ",
-				"./ft_ping -? ",
-				"./ft_ping --help ",
-				"./ft_ping -v ",
-				"./ft_ping --verbose ",
-				"./ft_ping -n ",
-				"./ft_ping --numeric ",
-				"./ft_ping -w 66 ",
-				"./ft_ping --timeout 67 ",
-				"./ft_ping -W 68 ",
-				"./ft_ping --linger 69 ",
-				"./ft_ping -s 70 ",
-				"./ft_ping --size 71 ",
-				"./ft_ping -L 72 ",
-				"./ft_ping --ttl 73 ",
-				"./ft_ping -v -n ",
-				"./ft_ping --verbose --numeric ",
-				"./ft_ping -v --numeric ",
-				"./ft_ping --verbose -n ",
-				"./ft_ping -w 74 -n ",
-				"./ft_ping --timeout 75 --numeric ",
-				"./ft_ping --timeout 76 -n ",
-				"./ft_ping -n --timeout 77 ",
-				"./ft_ping -v -n -w 78 -W 79 -s 80 -L 81 ",
-				"./ft_ping -v -n -w 78  -W 79 -s 80 -L 81",
-				"./ft_ping --verbose --numeric --timeout 82 --linger 83 --size 84 --ttl 85 "
+				"./ft_ping  ",
+				"./ft_ping -?  ",
+				"./ft_ping --help  ",
+				"./ft_ping -v  ",
+				"./ft_ping --verbose  ",
+				"./ft_ping -n  ",
+				"./ft_ping --numeric  ",
+				"./ft_ping -w 66  ",
+				"./ft_ping --timeout 67  ",
+				"./ft_ping -W 68  ",
+				"./ft_ping --linger 69  ",
+				"./ft_ping -s 70  ",
+				"./ft_ping --size 71  ",
+				"./ft_ping -L 72  ",
+				"./ft_ping --ttl 73  ",
+				"./ft_ping -v -n  ",
+				"./ft_ping --verbose --numeric  ",
+				"./ft_ping -v --numeric  ",
+				"./ft_ping --verbose -n  ",
+				"./ft_ping -w 74 -n  ",
+				"./ft_ping --timeout 75 --numeric  ",
+				"./ft_ping --timeout 76 -n  ",
+				"./ft_ping -n --timeout 77  ",
+				"./ft_ping -v -n -w 78 -W 79 -s 80 -L 81  ",
+				"./ft_ping --verbose --numeric --timeout 82 --linger 83 --size 84 --ttl 85  ",
+				"./ft_ping -v --numeric -w 82 --linger 83 -s 84 --ttl 85  ",
+				"./ft_ping   -v -n -w 78 -W 79 -s 80 -L 81",
+				"./ft_ping -v   -n -w 78 -W 79 -s 80 -L 81",
+				"./ft_ping -v -n   -w 78 -W 79 -s 80 -L 81",
+				"./ft_ping -v -n -w 78   -W 79 -s 80 -L 81",
+				"./ft_ping -v -n -w 78 -W 79   -s 80 -L 81",
+				"./ft_ping -v -n -w 78 -W 79 -s 80   -L 81",
+				"./ft_ping --verbose --numeric --timeout 82   --linger 83 --size 84 --ttl 85",
+				"./ft_ping -v --numeric -w 82   --linger 83 -s 84 --ttl 85"
 			]
 		},
 		{
@@ -158,8 +192,16 @@
 				"./ft_ping --timeout 76 -n coucou",
 				"./ft_ping -n --timeout 77 coucou",
 				"./ft_ping -v -n -w 78 -W 79 -s 80 -L 81 coucou",
+				"./ft_ping --verbose --numeric --timeout 82 --linger 83 --size 84 --ttl 85 coucou",
+				"./ft_ping -v --numeric -w 82 --linger 83 -s 84 --ttl 85 coucou",
+				"./ft_ping coucou -v -n -w 78 -W 79 -s 80 -L 81",
+				"./ft_ping -v coucou -n -w 78 -W 79 -s 80 -L 81",
+				"./ft_ping -v -n coucou -w 78 -W 79 -s 80 -L 81",
 				"./ft_ping -v -n -w 78 coucou -W 79 -s 80 -L 81",
-				"./ft_ping --verbose --numeric --timeout 82 --linger 83 --size 84 --ttl 85 coucou"
+				"./ft_ping -v -n -w 78 -W 79 coucou -s 80 -L 81",
+				"./ft_ping -v -n -w 78 -W 79 -s 80 coucou -L 81",
+				"./ft_ping --verbose --numeric --timeout 82 coucou --linger 83 --size 84 --ttl 85",
+				"./ft_ping -v --numeric -w 82 coucou --linger 83 -s 84 --ttl 85"
 			]
 		}
 	]

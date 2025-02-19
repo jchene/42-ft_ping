@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:22:47 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/18 15:56:53 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/19 16:55:36 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,16 @@
 # define FALSE 0
 # define TRUE 1
 
-# define ERR_OPT_ERROR 2
-# define ERR_MISSING_HOST 3
-# define ERR_UNKNOWN_ERR 4
-# define ERR_SOCKET 5
+# define ERR_NO_ERR 0
+# define ERR_OPT_ERROR 1
+# define ERR_MISSING_HOST 2
+# define ERR_UNKNOWN_ERR 3
+# define ERR_SOCK_CREAT_FAIL 4
+# define ERR_SETSOCKOPT_FAIL 5
 # define ERR_UNKNOWN_HOST 6
+# define ERR_THREAD_CREAT_FAIL 7
+# define ERR_SENDTO_FAIL 8
+# define ERR_RECVFROM_FAIL 9
 
 # define DEFAULT_HELP FALSE
 # define DEFAULT_VERBOSE FALSE
@@ -51,7 +56,10 @@
 # define DEFAULT_TTL 255
 # define DEFAULT_HOST NULL
 
+# define PACKET_LIST_SIZE 65536
+
 typedef char t_err;
+typedef struct option t_long_options;
 
 typedef struct s_options {
 	bool		help;
@@ -65,15 +73,34 @@ typedef struct s_options {
 	char		*host;
 }	t_options;
 
+typedef struct s_packet_info {
+	struct timeval send_time;
+	unsigned sequence;
+}	t_packet_info;
+
 typedef struct s_context { 
 	int sockfd;
 	struct sockaddr_in target_addr;
-	t_err net_error;
 	t_options opts;
+	pthread_mutex_t running_lock;
 	bool running;
-	pthread_mutex_t lock;
+	pthread_mutex_t err_lock;
+	t_err net_error;
+	pthread_mutex_t list_lock;
+	unsigned packet_list_size;
+	t_packet_info packet_list[PACKET_LIST_SIZE];
 }	t_context;
 
 t_options parse_options(int argc, char **argv);
+t_context create_threads(t_options opts);
+
+int get_oldest_packet(t_context* context);
+
+bool mutex_get_running(t_context *context);
+void mutex_set_running(t_context *context, bool running);
+t_err mutex_get_net_error(t_context *context);
+void mutex_set_net_error(t_context *context, t_err net_error);
+t_packet_info mutex_get_packet_info(t_context *context, int sequence);
+void mutex_set_packet_info(t_context *context, int sequence, t_packet_info packet_info);
 
 #endif
