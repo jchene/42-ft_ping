@@ -22,8 +22,9 @@ def run_command(command, expected_err):
 def main():
 	# Lecture du fichier de configuration
 	try:
-		with open("pytest/multi.json", "r") as f:
-			config = json.load(f)
+		filename = sys.argv[1] if len(sys.argv) > 1 else "config.json"
+		with open(filename, "r") as f:
+    		config = json.load(f)
 	except Exception as err:
 		print("Erreur lors de la lecture du fichier de configuration:", err)
 		return

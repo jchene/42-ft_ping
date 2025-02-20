@@ -10,7 +10,7 @@
 /*																			*/
 /* ************************************************************************** */
 
-#include "ping.h"
+#include "../ft_ping.h"
 
 static t_long_options *get_long_opts()
 {

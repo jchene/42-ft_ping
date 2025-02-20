@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_ping.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:52:21 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/19 15:02:29 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/20 15:55:09 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ping.h"
+#include "ft_ping.h"
 
 static t_err print_error(t_err err, char** argv) {
 	switch (err) {
@@ -26,8 +26,20 @@ static t_err print_error(t_err err, char** argv) {
 	case ERR_SOCK_CREAT_FAIL:
 		fprintf(stderr, "ft_ping: Socket creation failed... Computer isn't computering.\n");
 		break;
+	case ERR_SETSOCKOPT_FAIL:
+		fprintf(stderr, "ft_ping: Socket option setting failed... Computer isn't computering.\n");
+		break;
 	case ERR_UNKNOWN_HOST:
 		fprintf(stderr, "ft_ping: Unknown host.\n");
+		break;
+	case ERR_THREAD_CREAT_FAIL:
+		fprintf(stderr, "ft_ping: Thread creation failed... Computer isn't computering.\n");
+		break;
+	case ERR_SENDTO_FAIL:
+		fprintf(stderr, "ft_ping: Sendto function failed... Computer isn't computering.\n");
+		break;
+	case ERR_RECVFROM_FAIL:
+		fprintf(stderr, "ft_ping: Recv function failed... Computer isn't computering.\n");
 		break;
 	default:
 		break;

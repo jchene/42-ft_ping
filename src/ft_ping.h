@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ping.h                                             :+:      :+:    :+:   */
+/*   ft_ping.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:22:47 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/19 16:55:36 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/20 16:12:13 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PING_H
+#ifndef FT_PING_H
 
-# define PING_H
+# define FT_PING_H
 # define _GNU_SOURCE
 
 # include <stdio.h>
@@ -70,7 +70,7 @@ typedef struct s_options {
 	unsigned	packet_timeout;
 	unsigned	packet_size;
 	unsigned	ttl;
-	char		*host;
+	char* host;
 }	t_options;
 
 typedef struct s_packet_info {
@@ -78,10 +78,12 @@ typedef struct s_packet_info {
 	unsigned sequence;
 }	t_packet_info;
 
-typedef struct s_context { 
+typedef struct s_context {
 	int sockfd;
 	struct sockaddr_in target_addr;
 	t_options opts;
+	unsigned packet_sent;
+	unsigned packet_received;
 	pthread_mutex_t running_lock;
 	bool running;
 	pthread_mutex_t err_lock;
@@ -91,16 +93,21 @@ typedef struct s_context {
 	t_packet_info packet_list[PACKET_LIST_SIZE];
 }	t_context;
 
-t_options parse_options(int argc, char **argv);
+t_options parse_options(int argc, char** argv);
 t_context create_threads(t_options opts);
+void* receive_thread(void* arg);
+void* send_thread(void* arg);
 
-int get_oldest_packet(t_context* context);
+void mutex_set_running(t_context* context, bool running);
+void mutex_set_net_error(t_context* context, t_err net_error);
+void mutex_set_packet_info(t_context* context, t_packet_info packet_info);
+bool mutex_get_running(t_context* context);
+t_err mutex_get_net_error(t_context* context);
+unsigned mutex_get_list_size(t_context *context);
+t_packet_info mutex_get_packet_info_by_seq(t_context* context, unsigned sequence);
+t_packet_info mutex_get_packet_info_by_index(t_context* context, unsigned sequence);
 
-bool mutex_get_running(t_context *context);
-void mutex_set_running(t_context *context, bool running);
-t_err mutex_get_net_error(t_context *context);
-void mutex_set_net_error(t_context *context, t_err net_error);
-t_packet_info mutex_get_packet_info(t_context *context, int sequence);
-void mutex_set_packet_info(t_context *context, int sequence, t_packet_info packet_info);
+unsigned get_oldest_packet(t_context* context);
+unsigned short checksum(void* b, int len);
 
 #endif

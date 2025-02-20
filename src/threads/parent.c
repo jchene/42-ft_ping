@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   threads.c                                          :+:      :+:    :+:   */
+/*   parent.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/19 14:41:57 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/19 16:36:25 by jchene           ###   ########.fr       */
+/*   Created: 2025/02/20 14:54:58 by jchene            #+#    #+#             */
+/*   Updated: 2025/02/20 16:15:08 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ping.h"
+#include "../ft_ping.h"
 
 static t_context init_context(t_options opts) {
 	t_context context;
@@ -40,64 +40,21 @@ static t_context init_context(t_options opts) {
 	context.target_addr = target_addr;
 	context.opts = opts;
 	context.running = true;
+	context.packet_sent = 0;
+	context.packet_received = 0;
 	pthread_mutex_init(&context.running_lock, NULL);
 	pthread_mutex_init(&context.err_lock, NULL);
 	pthread_mutex_init(&context.list_lock, NULL);
 	return context;
 }
 
-static void *send_thread(void *arg) {
-	int sequence = 0;
-	struct icmphdr icmp_hdr;
-
-	t_context *context = (t_context *)arg;
-	int packet_size = context->opts.packet_size + sizeof(struct icmphdr);
-	char packet[packet_size];
-
-	memset(&icmp_hdr, 0, sizeof(icmp_hdr));
-	icmp_hdr.type = ICMP_ECHO;
-	icmp_hdr.code = 0;
-	icmp_hdr.un.echo.id = getpid() & 0xFFFF;
-	icmp_hdr.un.echo.sequence = sequence++;
-	icmp_hdr.checksum = checksum(&icmp_hdr, sizeof(icmp_hdr));
-	memcpy(packet, &icmp_hdr, sizeof(icmp_hdr));
-	while (mutex_get_running(context)) {
-		if (sendto(context->sockfd, packet, packet_size, 0, (struct sockaddr *)&context->target_addr, sizeof(context->target_addr)) <= 0) {
-			mutex_set_running(context, false);
-			mutex_set_net_error(context, ERR_SENDTO_FAIL);
-			break;
-		}
-		usleep(1000000);
-		icmp_hdr.un.echo.sequence = sequence++;
-		icmp_hdr.checksum = checksum(&icmp_hdr, sizeof(icmp_hdr));
-		memcpy(packet, &icmp_hdr, sizeof(icmp_hdr));
-	}
-	return NULL;
-}
-
-static void *receive_thread(void *arg) {
-	t_context *context = (t_context *)arg;
-	struct sockaddr_in sender_addr;
-	socklen_t sender_addr_len = sizeof(sender_addr);
-	char buffer[1024];
-	int recv_len;
-
-	
-	while (mutex_get_running(context)) {
-		recv_len = recvfrom(context->sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *)&sender_addr, &sender_addr_len);
-		if (recv_len < 0) {
-			mutex_set_running(context, false);
-			mutex_set_net_error(context, ERR_RECVFROM_FAIL);
-			break;
-		}
-	}
-	return NULL;
-}
-
 t_context create_threads(t_options opts) {
 	t_context context;
 	pthread_t send_thread_id, recv_thread_id;
+	struct timeval first_send_time;
+	char test = 0;
 
+	(void)first_send_time;
 	context = init_context(opts);
 	if (context.net_error)
 		return context;
@@ -113,5 +70,13 @@ t_context create_threads(t_options opts) {
 		pthread_join(send_thread_id, NULL);
 		return context;
 	}
+	while (mutex_get_running(&context))
+	{
+		if (!test && mutex_get_list_size(&context)){
+			first_send_time = mutex_get_packet_info_by_index(&context, 0).send_time;
+			test = 1;
+		}
+	}
+	
 	return context;
 }

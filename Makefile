@@ -1,7 +1,14 @@
 NAME    = ft_ping
+BIN_DIR = bin
 
-SRCS    = src/main.c \
-          src/parsing.c
+SRCS    =	src/ft_ping.c \
+			src/parsing/parsing.c \
+			src/mutex/mutex_get.c \
+			src/mutex/mutex_set.c \
+			src/threads/parent.c \
+			src/threads/sender.c \
+			src/threads/receiver.c \
+			src/utils/utils.c
 
 OBJ_DIR = obj
 OBJS    = $(SRCS:src/%.c=$(OBJ_DIR)/%.o)
@@ -13,11 +20,12 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	@echo "Linking object files..."
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
-	@echo "Compilation ended : $(NAME) was created."
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $(BIN_DIR)/$(NAME) $(OBJS)
+	@echo "Compilation ended : $(BIN_DIR)/$(NAME) was created."
 
 $(OBJ_DIR)/%.o: src/%.c
-	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(dir $@)
 	@echo "Compilation of $<..."
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -27,7 +35,7 @@ clean:
 
 fclean: clean
 	@echo "Full cleaning..."
-	@rm -f $(NAME)
+	@rm -rf $(BIN_DIR)
 
 re: fclean all
 
