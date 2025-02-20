@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:51:29 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/20 16:11:08 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/20 22:10:40 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,13 @@ bool mutex_get_running(t_context* context) {
 	return running;
 }
 
-t_err mutex_get_net_error(t_context* context) {
-	t_err net_error;
+t_err mutex_get_ctx_error(t_context* context) {
+	t_err ctx_error;
 
 	pthread_mutex_lock(&context->err_lock);
-	net_error = context->net_error;
+	ctx_error = context->ctx_error;
 	pthread_mutex_unlock(&context->err_lock);
-	return net_error;
+	return ctx_error;
 }
 
 unsigned mutex_get_list_size(t_context* context) {

@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:51:08 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/20 15:48:25 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/20 22:10:40 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ void mutex_set_running(t_context *context, bool running) {
 	pthread_mutex_unlock(&context->running_lock);
 }
 
-void mutex_set_net_error(t_context *context, t_err net_error) {
+void mutex_ser_ctx_error(t_context *context, t_err ctx_error) {
 	pthread_mutex_lock(&context->err_lock);
-	context->net_error = net_error;
+	context->ctx_error = ctx_error;
 	pthread_mutex_unlock(&context->err_lock);
 }
 

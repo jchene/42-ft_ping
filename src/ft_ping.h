@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:22:47 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/20 16:12:13 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/20 22:21:34 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # include <signal.h>
 # include <sys/time.h>
 # include <pthread.h>
+# include <fcntl.h>
 
 # define FALSE 0
 # define TRUE 1
@@ -44,7 +45,8 @@
 # define ERR_UNKNOWN_HOST 6
 # define ERR_THREAD_CREAT_FAIL 7
 # define ERR_SENDTO_FAIL 8
-# define ERR_RECVFROM_FAIL 9
+# define ERR_SELECT_FAIL 9
+# define ERR_RECVFROM_FAIL 10
 
 # define DEFAULT_HELP FALSE
 # define DEFAULT_VERBOSE FALSE
@@ -84,25 +86,30 @@ typedef struct s_context {
 	t_options opts;
 	unsigned packet_sent;
 	unsigned packet_received;
+	pthread_t send_thread_id;
+	pthread_t recv_thread_id;
+
 	pthread_mutex_t running_lock;
 	bool running;
+
 	pthread_mutex_t err_lock;
-	t_err net_error;
+	t_err ctx_error;
+
 	pthread_mutex_t list_lock;
 	unsigned packet_list_size;
 	t_packet_info packet_list[PACKET_LIST_SIZE];
 }	t_context;
 
 t_options parse_options(int argc, char** argv);
-t_context create_threads(t_options opts);
+t_context parent_thread(t_options opts);
 void* receive_thread(void* arg);
 void* send_thread(void* arg);
 
 void mutex_set_running(t_context* context, bool running);
-void mutex_set_net_error(t_context* context, t_err net_error);
+void mutex_ser_ctx_error(t_context* context, t_err ctx_error);
 void mutex_set_packet_info(t_context* context, t_packet_info packet_info);
 bool mutex_get_running(t_context* context);
-t_err mutex_get_net_error(t_context* context);
+t_err mutex_get_ctx_error(t_context* context);
 unsigned mutex_get_list_size(t_context *context);
 t_packet_info mutex_get_packet_info_by_seq(t_context* context, unsigned sequence);
 t_packet_info mutex_get_packet_info_by_index(t_context* context, unsigned sequence);

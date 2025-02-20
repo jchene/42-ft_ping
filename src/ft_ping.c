@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:52:21 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/20 15:55:09 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/20 22:21:44 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static t_err print_error(t_err err, char** argv) {
 		fprintf(stderr, "ft_ping: invalid option -- '%s'\nTry '%s --help' for more information.\n", argv[optind - 1], argv[0]);
 		break;
 	case ERR_MISSING_HOST:
-		fprintf(stderr, "ft_ping: missing host operand\nTry './ft_ping --help' for more information.");
+		fprintf(stderr, "ft_ping: missing host operand\nTry './ft_ping --help' for more information.\n");
 		break;
 	case ERR_UNKNOWN_ERR:
 		fprintf(stderr, "ft_ping: Unknown error... Computer isn't computering.\n");
@@ -60,6 +60,8 @@ static t_err print_help() {
 	return ERR_NO_ERR;
 }
 
+
+
 int main(int argc, char** argv) {
 	t_options opts;
 	t_context context;
@@ -70,11 +72,10 @@ int main(int argc, char** argv) {
 	if (opts.help)
 		return print_help();
 
-	context = create_threads(opts);
-	if (context.net_error)
-		return print_error(context.net_error, argv);
-
+	context = parent_thread(opts);
+	if (context.ctx_error){
+		print_error(context.ctx_error, argv);
+	}
 	
-	close(context.sockfd);
 	return ERR_NO_ERR;
 }
