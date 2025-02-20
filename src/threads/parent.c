@@ -6,33 +6,37 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:54:58 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/20 22:24:49 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/20 22:31:49 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../ft_ping.h"
 
+static int create_socket(t_options opts) {
+	int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+
+	if (sockfd < 0)
+		return ERR_SOCK_CREAT_FAIL * -1;
+	if (setsockopt(sockfd, IPPROTO_IP, IP_TTL, &opts.ttl, sizeof(opts.ttl)) < 0)
+		return ERR_SETSOCKOPT_FAIL * -1;
+	return sockfd;
+}
+
 static t_context init_context(t_options opts) {
 	t_context context;
 	struct sockaddr_in target_addr;
-	int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
-
-	if (sockfd < 0) {
-		context.ctx_error = ERR_SOCK_CREAT_FAIL;
-		return context;
-	}
-	if (setsockopt(sockfd, IPPROTO_IP, IP_TTL, &opts.ttl, sizeof(opts.ttl)) < 0) {
-		context.ctx_error = ERR_SETSOCKOPT_FAIL;
-		return context;
-	}
 	
-	context.sockfd = sockfd;
+	context.sockfd = create_socket(opts);
+	if (context.sockfd < 0) {
+		context.ctx_error = context.sockfd * -1;
+		return context;
+	}
 	memset(&target_addr, 0, sizeof(target_addr));
 	target_addr.sin_family = AF_INET;
 	if (inet_pton(AF_INET, opts.host, &target_addr.sin_addr) <= 0) {
 		struct hostent* host = gethostbyname(opts.host);
 		if (!host) {
-			close(sockfd);
+			close(context.sockfd);
 			context.ctx_error = ERR_UNKNOWN_HOST;
 			return context;
 		}
