@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:22:47 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/21 15:45:37 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/21 16:24:39 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,14 @@
 # define ERR_OPT_ERROR 1
 # define ERR_MISSING_HOST 2
 # define ERR_UNKNOWN_ERR 3
-# define ERR_SOCK_CREAT_FAIL 4
-# define ERR_SETSOCKOPT_FAIL 5
-# define ERR_UNKNOWN_HOST 6
-# define ERR_THREAD_CREAT_FAIL 7
-# define ERR_SENDTO_FAIL 8
-# define ERR_SELECT_FAIL 9
-# define ERR_RECVFROM_FAIL 10
+# define ERR_SIGACTION_FAIL 4
+# define ERR_SOCK_CREAT_FAIL 5
+# define ERR_SETSOCKOPT_FAIL 6
+# define ERR_UNKNOWN_HOST 7
+# define ERR_THREAD_CREAT_FAIL 8
+# define ERR_SENDTO_FAIL 9
+# define ERR_SELECT_FAIL 10
+# define ERR_RECVFROM_FAIL 11
 
 # define DEFAULT_HELP FALSE
 # define DEFAULT_VERBOSE FALSE
@@ -114,9 +115,11 @@ typedef struct s_context {
 }	t_context;
 
 t_options parse_options(int argc, char** argv);
-t_context parent_thread(t_options opts);
+t_context *parent_thread(t_options opts);
 void* receive_thread(void* arg);
 void* send_thread(void* arg);
+t_context *get_context();
+void handle_sigint(int sig);
 
 void mutex_set_running(t_context* context, bool running);
 void mutex_set_ctx_error(t_context* context, t_err ctx_error);

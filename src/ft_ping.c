@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:52:21 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/21 12:26:32 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/21 16:39:43 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ static t_err print_help() {
 
 int main(int argc, char** argv) {
 	t_options opts;
-	t_context context;
+	t_context *context;
 
 	opts = parse_options(argc, argv);
 	if (opts.opt_error)
@@ -72,8 +72,13 @@ int main(int argc, char** argv) {
 		return print_help();
 
 	context = parent_thread(opts);
-	if (context.ctx_error)
-		return print_error(context.ctx_error, argv);
+	if (context->ctx_error)
+		return print_error(context->ctx_error, argv);
 	
 	return ERR_NO_ERR;
 }
+
+//Left:
+//Program timeout
+//Numeric
+//Verbose

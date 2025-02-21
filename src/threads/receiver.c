@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:59:24 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/21 15:46:15 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/21 16:39:05 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static t_err read_response(t_context* context) {
 			round_trip_time = (recieve_time.tv_sec - send_time.tv_sec) * 1000.0 + (recieve_time.tv_usec - send_time.tv_usec) / 1000.0;
 			if (round_trip_time <= (double)context->opts.packet_timeout * 1000.0) {
 				printf("%d bytes from %s: icmp_seq=%d ttl=%d time time=%.3f ms\n", packet_context.recv_len - ip_header_len, 
-					inet_ntoa(packet_context.sender_addr.sin_addr), icmp_header->un.echo.sequence, ip_header->ip_ttl, round_trip_time);
+					inet_ntoa(context->target_addr.sin_addr), icmp_header->un.echo.sequence, ip_header->ip_ttl, round_trip_time);
 				update_stats(&context->stats, round_trip_time);
 			}
 		}

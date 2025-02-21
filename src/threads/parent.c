@@ -6,11 +6,16 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:54:58 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/21 15:47:47 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/21 16:27:31 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../ft_ping.h"
+
+t_context *get_context(){
+	static t_context context;
+	return &context;
+}
 
 static int create_socket(t_options opts) {
 	int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
@@ -28,7 +33,7 @@ static t_context init_context(t_options opts) {
 	
 	context.sockfd = create_socket(opts);
 	if (context.sockfd < 0) {
-		context.ctx_error = context.sockfd * -1;
+		context.ctx_error = ERR_SOCK_CREAT_FAIL;
 		return context;
 	}
 	memset(&target_addr, 0, sizeof(target_addr));
@@ -73,27 +78,35 @@ static void stop_threads(t_context* context) {
 	close(context->sockfd);
 }
 
-t_context parent_thread(t_options opts) {
-	t_context context;
+t_context *parent_thread(t_options opts) {
+	t_context *context = get_context();
 	struct timeval first_send_time;
 	bool init_ok = FALSE;
+	struct sigaction sa;
+
+    sa.sa_handler = handle_sigint;
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);
+    if (sigaction(SIGINT, &sa, NULL) == -1) {
+        context->ctx_error = ERR_SIGACTION_FAIL;
+		return context;
+    }
 
 	(void)first_send_time;
-	context = init_context(opts);
-	if (context.ctx_error)
+	*context = init_context(opts);
+	if (context->ctx_error)
 		return context;
 
-	create_threads(&context);
-	if (context.ctx_error)
+	create_threads(context);
+	if (context->ctx_error)
 		return context;
 	
-	while (mutex_get_running(&context))
-	{
-		if (!init_ok && mutex_get_list_size(&context)){
-			first_send_time = mutex_get_packet_info_by_index(&context, 0).send_time;
+	while (mutex_get_running(context)){
+		if (!init_ok && mutex_get_list_size(context)){
+			first_send_time = mutex_get_packet_info_by_index(context, 0).send_time;
 			init_ok = TRUE;
 		}
 	}
-	stop_threads(&context);
+	stop_threads(context);
 	return context;
 }
