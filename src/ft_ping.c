@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:52:21 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/20 22:21:44 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/21 12:26:32 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,19 +48,18 @@ static t_err print_error(t_err err, char** argv) {
 }
 
 static t_err print_help() {
-	printf("Usage: ./ft_ping [OPTION]... HOST\n");
+	printf("Usage: ft_ping [OPTION]... HOST ...\n");
 	printf("Send ICMP ECHO_REQUEST packets to network hosts.\n\n");
-	printf("  -?, --help\t\t\tDisplay this help and exit.\n");
-	printf("  -v, --verbose\t\t\tPrint detailed output.\n");
-	printf("  -n, --numeric\t\t\tDo not resolve hostnames.\n");
-	printf("  -w, --timeout=SECONDS\t\tTime to wait for a response in seconds.\n");
-	printf("  -W, --linger=SECONDS\t\tTime to wait for a response in seconds.\n");
-	printf("  -s, --size=BYTES\t\tSpecify the number of data bytes to be sent.\n");
-	printf("  -L, --ttl=HOPS\t\t\tSpecify the number of hops a packet can traverse.\n");
+	printf("  -n, --numeric\t\t\tdo not resolve host addresses\n");
+	printf("  -L, --ttl=N\t\t\tspecify N as time-to-live\n");
+	printf("  -v, --verbose\t\t\tverbose output\n");
+	printf("  -w, --timeout=N\t\tstop after N seconds\n");
+	printf("  -W, --linger=N\t\tnumber of seconds to wait for response\n");
+	printf("  -s, --size=NUMBER\t\tSpecify the number of data bytes to be sent.\n");
+	printf("  -?, --help\t\t\tgive this help list\n\n");
+	printf("Mandatory or optional arguments to long options are also mandatory or optional for any corresponding short options.\n");
 	return ERR_NO_ERR;
 }
-
-
 
 int main(int argc, char** argv) {
 	t_options opts;
@@ -73,9 +72,8 @@ int main(int argc, char** argv) {
 		return print_help();
 
 	context = parent_thread(opts);
-	if (context.ctx_error){
-		print_error(context.ctx_error, argv);
-	}
+	if (context.ctx_error)
+		return print_error(context.ctx_error, argv);
 	
 	return ERR_NO_ERR;
 }

@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:22:47 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/20 22:21:34 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/21 15:45:37 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 # include <sys/time.h>
 # include <pthread.h>
 # include <fcntl.h>
+# include <math.h>
 
 # define FALSE 0
 # define TRUE 1
@@ -58,7 +59,7 @@
 # define DEFAULT_TTL 255
 # define DEFAULT_HOST NULL
 
-# define PACKET_LIST_SIZE 65536
+# define PACKET_LIST_MAX_SIZE 65536
 
 typedef char t_err;
 typedef struct option t_long_options;
@@ -80,24 +81,36 @@ typedef struct s_packet_info {
 	unsigned sequence;
 }	t_packet_info;
 
+typedef struct s_packet_context {
+	struct sockaddr_in sender_addr;
+	socklen_t sender_addr_len;
+	char buffer[1024];
+	int recv_len;
+}	t_packet_context;
+
+typedef struct s_packets_stats {
+	unsigned sent;
+	unsigned received;
+	double avg_time;
+	double min_time;
+	double max_time;
+	double dif_squares_sum;
+}	t_packet_stats;
+
 typedef struct s_context {
 	int sockfd;
 	struct sockaddr_in target_addr;
 	t_options opts;
-	unsigned packet_sent;
-	unsigned packet_received;
+	t_packet_stats stats;
 	pthread_t send_thread_id;
 	pthread_t recv_thread_id;
-
 	pthread_mutex_t running_lock;
 	bool running;
-
 	pthread_mutex_t err_lock;
 	t_err ctx_error;
-
 	pthread_mutex_t list_lock;
 	unsigned packet_list_size;
-	t_packet_info packet_list[PACKET_LIST_SIZE];
+	t_packet_info packet_list[PACKET_LIST_MAX_SIZE];
 }	t_context;
 
 t_options parse_options(int argc, char** argv);
@@ -106,7 +119,7 @@ void* receive_thread(void* arg);
 void* send_thread(void* arg);
 
 void mutex_set_running(t_context* context, bool running);
-void mutex_ser_ctx_error(t_context* context, t_err ctx_error);
+void mutex_set_ctx_error(t_context* context, t_err ctx_error);
 void mutex_set_packet_info(t_context* context, t_packet_info packet_info);
 bool mutex_get_running(t_context* context);
 t_err mutex_get_ctx_error(t_context* context);
@@ -116,5 +129,6 @@ t_packet_info mutex_get_packet_info_by_index(t_context* context, unsigned sequen
 
 unsigned get_oldest_packet(t_context* context);
 unsigned short checksum(void* b, int len);
+void print_stats(t_packet_stats* stats);
 
 #endif

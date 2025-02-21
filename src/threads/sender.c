@@ -6,13 +6,13 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:57:08 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/20 22:06:46 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/21 15:46:30 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../ft_ping.h"
 
-void build_packet(char* packet, int packet_size, int sequence) {
+static void build_packet(char* packet, int packet_size, int sequence) {
 	struct icmphdr icmp_hdr;
 
 	memset(packet, 0, packet_size);
@@ -26,24 +26,22 @@ void build_packet(char* packet, int packet_size, int sequence) {
 }
 
 void* send_thread(void* arg) {
-	int sequence = 0;
 	t_context* context = (t_context*)arg;
 	int packet_size = context->opts.packet_size + sizeof(struct icmphdr);
 	char packet[packet_size];
 	t_packet_info packet_info;
 
 	while (mutex_get_running(context)) {
-		build_packet(packet, packet_size, sequence);
+		build_packet(packet, packet_size, context->stats.sent);
 		if (sendto(context->sockfd, packet, packet_size, 0, (struct sockaddr*)&context->target_addr, sizeof(context->target_addr)) <= 0) {
 			mutex_set_running(context, false);
-			mutex_ser_ctx_error(context, ERR_SENDTO_FAIL);
+			mutex_set_ctx_error(context, ERR_SENDTO_FAIL);
 			break;
 		}
 		gettimeofday(&packet_info.send_time, NULL);
-		packet_info.sequence = sequence;
+		packet_info.sequence = context->stats.sent;
 		mutex_set_packet_info(context, packet_info);
-		sequence++;
-		context->packet_sent++;
+		context->stats.sent++;
 		usleep(1000000);
 	}
 	return NULL;

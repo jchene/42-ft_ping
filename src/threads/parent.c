@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:54:58 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/20 22:31:49 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/21 15:47:47 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,8 @@ static t_context init_context(t_options opts) {
 	context.target_addr = target_addr;
 	context.opts = opts;
 	context.running = true;
-	context.packet_sent = 0;
-	context.packet_received = 0;
+	context.stats.sent = 0;
+	context.stats.received = 0;
 	pthread_mutex_init(&context.running_lock, NULL);
 	pthread_mutex_init(&context.err_lock, NULL);
 	pthread_mutex_init(&context.list_lock, NULL);
@@ -56,12 +56,12 @@ static t_context init_context(t_options opts) {
 static void create_threads(t_context* context) {
 	if (pthread_create(&context->send_thread_id, NULL, send_thread, context) != 0) {
 		mutex_set_running(context, false);
-		mutex_ser_ctx_error(context, ERR_THREAD_CREAT_FAIL);
+		mutex_set_ctx_error(context, ERR_THREAD_CREAT_FAIL);
 		return;
 	}
 	if (pthread_create(&context->recv_thread_id, NULL, receive_thread, context) != 0) {
 		mutex_set_running(context, false);
-		mutex_ser_ctx_error(context, ERR_THREAD_CREAT_FAIL);
+		mutex_set_ctx_error(context, ERR_THREAD_CREAT_FAIL);
 		pthread_join(context->send_thread_id, NULL);
 		return;
 	}

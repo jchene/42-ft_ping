@@ -15,13 +15,14 @@ OBJS    = $(SRCS:src/%.c=$(OBJ_DIR)/%.o)
 
 CC      = gcc
 CFLAGS  = -Wall -Wextra -Werror -std=c99
+LIBS    = -lm -lpthread
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
 	@echo "Linking object files..."
 	@mkdir -p $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $(BIN_DIR)/$(NAME) $(OBJS)
+	$(CC) $(CFLAGS) -o $(BIN_DIR)/$(NAME) $(OBJS) $(LIBS)
 	@echo "Compilation ended : $(BIN_DIR)/$(NAME) was created."
 
 $(OBJ_DIR)/%.o: src/%.c
