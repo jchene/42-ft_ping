@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:54:58 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/21 16:27:31 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/27 18:32:25 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ static t_context init_context(t_options opts) {
 	t_context context;
 	struct sockaddr_in target_addr;
 	
+	memset(&context, 0, sizeof(context));
 	context.sockfd = create_socket(opts);
 	if (context.sockfd < 0) {
 		context.ctx_error = ERR_SOCK_CREAT_FAIL;
@@ -76,11 +77,14 @@ static void stop_threads(t_context* context) {
 	pthread_join(context->send_thread_id, NULL);
 	pthread_join(context->recv_thread_id, NULL);
 	close(context->sockfd);
+	print_stats(&context->stats);
 }
 
 t_context *parent_thread(t_options opts) {
 	t_context *context = get_context();
 	struct timeval first_send_time;
+	struct timeval now;
+	unsigned time_diff;
 	bool init_ok = FALSE;
 	struct sigaction sa;
 
@@ -106,6 +110,15 @@ t_context *parent_thread(t_options opts) {
 			first_send_time = mutex_get_packet_info_by_index(context, 0).send_time;
 			init_ok = TRUE;
 		}
+		if (init_ok && context->opts.prgm_deadline){
+			gettimeofday(&now, NULL);
+			time_diff = (now.tv_sec - first_send_time.tv_sec) * 1000000 + now.tv_usec - first_send_time.tv_usec;
+			if (time_diff > context->opts.prgm_deadline * 1000000){
+				mutex_set_running(context, FALSE);
+				break;
+			}
+		}
+		usleep(PRGM_SLEEP);
 	}
 	stop_threads(context);
 	return context;

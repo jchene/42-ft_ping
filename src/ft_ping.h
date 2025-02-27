@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:22:47 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/21 16:24:39 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/27 18:32:20 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@
 # define DEFAULT_HOST NULL
 
 # define PACKET_LIST_MAX_SIZE 65536
+# define PRGM_SLEEP 2000
 
 typedef char t_err;
 typedef struct option t_long_options;

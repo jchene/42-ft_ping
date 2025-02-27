@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:52:21 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/21 16:39:43 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/27 18:21:56 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,11 @@ static t_err print_error(t_err err, char** argv) {
 	case ERR_UNKNOWN_ERR:
 		fprintf(stderr, "ft_ping: Unknown error... Computer isn't computering.\n");
 		break;
+	case ERR_SIGACTION_FAIL:
+		fprintf(stderr, "ft_ping: Signal action failed... Computer isn't computering.\n");
+		break;
 	case ERR_SOCK_CREAT_FAIL:
-		fprintf(stderr, "ft_ping: Socket creation failed... Computer isn't computering.\n");
+		fprintf(stderr, "ft_ping: Socket creation failed... Do you have root privileges?.\n");
 		break;
 	case ERR_SETSOCKOPT_FAIL:
 		fprintf(stderr, "ft_ping: Socket option setting failed... Computer isn't computering.\n");
@@ -37,6 +40,9 @@ static t_err print_error(t_err err, char** argv) {
 		break;
 	case ERR_SENDTO_FAIL:
 		fprintf(stderr, "ft_ping: Sendto function failed... Computer isn't computering.\n");
+		break;
+	case ERR_SELECT_FAIL:
+		fprintf(stderr, "ft_ping: Select function failed... Computer isn't computering.\n");
 		break;
 	case ERR_RECVFROM_FAIL:
 		fprintf(stderr, "ft_ping: Recv function failed... Computer isn't computering.\n");
@@ -79,6 +85,5 @@ int main(int argc, char** argv) {
 }
 
 //Left:
-//Program timeout
 //Numeric
 //Verbose
