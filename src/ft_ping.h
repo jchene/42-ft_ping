@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:22:47 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/27 18:32:20 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/28 15:28:38 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 # include <pthread.h>
 # include <fcntl.h>
 # include <math.h>
+# include <ifaddrs.h>
 
 # define FALSE 0
 # define TRUE 1
@@ -46,9 +47,10 @@
 # define ERR_SETSOCKOPT_FAIL 6
 # define ERR_UNKNOWN_HOST 7
 # define ERR_THREAD_CREAT_FAIL 8
-# define ERR_SENDTO_FAIL 9
-# define ERR_SELECT_FAIL 10
-# define ERR_RECVFROM_FAIL 11
+# define ERR_MALLOC_FAIL 9
+# define ERR_SENDTO_FAIL 10
+# define ERR_SELECT_FAIL 11
+# define ERR_RECVFROM_FAIL 12
 
 # define DEFAULT_HELP FALSE
 # define DEFAULT_VERBOSE FALSE
@@ -66,21 +68,11 @@
 typedef char t_err;
 typedef struct option t_long_options;
 
-typedef struct s_options {
-	bool		help;
-	bool		verbose;
-	bool		num_output;
-	t_err		opt_error;
-	unsigned	prgm_deadline;
-	unsigned	packet_timeout;
-	unsigned	packet_size;
-	unsigned	ttl;
-	char* host;
-}	t_options;
-
 typedef struct s_packet_info {
 	struct timeval send_time;
 	unsigned sequence;
+	struct iphdr* ip_header;
+	struct icmphdr* icmp_header;
 }	t_packet_info;
 
 typedef struct s_packet_context {
@@ -99,6 +91,18 @@ typedef struct s_packets_stats {
 	double dif_squares_sum;
 }	t_packet_stats;
 
+typedef struct s_options {
+	bool		help;
+	bool		verbose;
+	bool		num_output;
+	t_err		opt_error;
+	unsigned	prgm_deadline;
+	unsigned	packet_timeout;
+	unsigned	packet_size;
+	unsigned	ttl;
+	char* host;
+}	t_options;
+
 typedef struct s_context {
 	int sockfd;
 	struct sockaddr_in target_addr;
@@ -114,6 +118,8 @@ typedef struct s_context {
 	unsigned packet_list_size;
 	t_packet_info packet_list[PACKET_LIST_MAX_SIZE];
 }	t_context;
+
+
 
 t_options parse_options(int argc, char** argv);
 t_context *parent_thread(t_options opts);
@@ -134,5 +140,6 @@ t_packet_info mutex_get_packet_info_by_index(t_context* context, unsigned sequen
 unsigned get_oldest_packet(t_context* context);
 unsigned short checksum(void* b, int len);
 void print_stats(t_packet_stats* stats);
+void print_dump(int seq);
 
 #endif

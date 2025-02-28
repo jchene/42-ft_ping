@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:54:58 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/27 18:32:25 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/28 15:03:16 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,13 @@ t_context *get_context(){
 	return &context;
 }
 
-static int create_socket(t_options opts) {
+static int create_socket() {
 	int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+	int on = 1;
 
 	if (sockfd < 0)
 		return ERR_SOCK_CREAT_FAIL * -1;
-	if (setsockopt(sockfd, IPPROTO_IP, IP_TTL, &opts.ttl, sizeof(opts.ttl)) < 0)
+	if (setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0)
 		return ERR_SETSOCKOPT_FAIL * -1;
 	return sockfd;
 }
@@ -32,7 +33,7 @@ static t_context init_context(t_options opts) {
 	struct sockaddr_in target_addr;
 	
 	memset(&context, 0, sizeof(context));
-	context.sockfd = create_socket(opts);
+	context.sockfd = create_socket();
 	if (context.sockfd < 0) {
 		context.ctx_error = ERR_SOCK_CREAT_FAIL;
 		return context;

@@ -1,0 +1,32 @@
+{
+	"args": [
+		"--timeout 1 8.8.8.8",
+		"--timeout 1 -? 8.8.8.8",
+		"--timeout 1 --help 8.8.8.8",
+		"--timeout 1 -v 8.8.8.8",
+		"--timeout 1 --verbose 8.8.8.8",
+		"--timeout 1 -n 8.8.8.8",
+		"--timeout 1 --numeric 8.8.8.8",
+		"--timeout 1 -W 68 8.8.8.8",
+		"--timeout 1 --linger 69 8.8.8.8",
+		"--timeout 1 -s 70 8.8.8.8",
+		"--timeout 1 --size 71 8.8.8.8",
+		"--timeout 1 -L 72 8.8.8.8",
+		"--timeout 1 --ttl 73 8.8.8.8",
+		"--timeout 1 -v -n 8.8.8.8",
+		"--timeout 1 --verbose --numeric 8.8.8.8",
+		"--timeout 1 -v --numeric 8.8.8.8",
+		"--timeout 1 --verbose -n 8.8.8.8",
+		"--timeout 1 -v -n -W 79 -s 80 -L 81 8.8.8.8",
+		"--timeout 1 --verbose --numeric --linger 83 --size 84 --ttl 85 8.8.8.8",
+		"--timeout 1 -v --numeric --linger 83 -s 84 --ttl 85 8.8.8.8",
+		"--timeout 1 8.8.8.8 -v -n -W 79 -s 80 -L 81",
+		"--timeout 1 -v 8.8.8.8 -n -W 79 -s 80 -L 81",
+		"--timeout 1 -v -n 8.8.8.8 -W 79 -s 80 -L 81",
+		"--timeout 1 -v -n 8.8.8.8 -W 79 -s 80 -L 81",
+		"--timeout 1 -v -n -W 79 8.8.8.8 -s 80 -L 81",
+		"--timeout 1 -v -n -W 79 -s 80 8.8.8.8 -L 81",
+		"--timeout 1 --verbose --numeric 8.8.8.8 --linger 83 --size 84 --ttl 85",
+		"--timeout 1 -v --numeric 8.8.8.8 --linger 83 -s 84 --ttl 85"
+	]
+}

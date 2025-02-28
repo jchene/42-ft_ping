@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/17 13:52:21 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/27 18:21:56 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/28 15:28:53 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,9 @@ static t_err print_error(t_err err, char** argv) {
 		break;
 	case ERR_THREAD_CREAT_FAIL:
 		fprintf(stderr, "ft_ping: Thread creation failed... Computer isn't computering.\n");
+		break;
+	case ERR_MALLOC_FAIL:
+		fprintf(stderr, "ft_ping: Malloc function failed... Computer isn't computering.\n");
 		break;
 	case ERR_SENDTO_FAIL:
 		fprintf(stderr, "ft_ping: Sendto function failed... Computer isn't computering.\n");
@@ -83,7 +86,3 @@ int main(int argc, char** argv) {
 	
 	return ERR_NO_ERR;
 }
-
-//Left:
-//Numeric
-//Verbose

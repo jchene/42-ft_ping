@@ -6,7 +6,7 @@
 /*   By: jchene <jchene@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:59:24 by jchene            #+#    #+#             */
-/*   Updated: 2025/02/27 18:32:28 by jchene           ###   ########.fr       */
+/*   Updated: 2025/02/28 14:18:52 by jchene           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,26 @@ static void update_stats(t_packet_stats* stats, double time) {
 	stats->dif_squares_sum += delta * delta2;
 }
 
+static void print_bytes_from(t_packet_context* packet_context, struct ip* ip_header, int ip_header_len, bool numeric) {
+	char host[NI_MAXHOST];
+	int getname_ret;
+
+	if (numeric) {
+		printf("%d bytes from %s: ", packet_context->recv_len - ip_header_len, inet_ntoa(ip_header->ip_src));
+		return;
+	}
+	getname_ret = getnameinfo((struct sockaddr*)&packet_context->sender_addr, packet_context->sender_addr_len,
+		host, sizeof(host),
+		NULL, 0,
+		NI_NAMEREQD);
+	if (getname_ret) 
+		printf("%d bytes from %s: ", packet_context->recv_len - ip_header_len, inet_ntoa(ip_header->ip_src));
+	else
+		printf("%d bytes from %s (%s): ", packet_context->recv_len - ip_header_len, host, inet_ntoa(ip_header->ip_src));
+}
+
+
+
 static t_err read_response(t_context* context) {
 	t_packet_context packet_context = { 0 };
 	struct ip* ip_header;
@@ -46,34 +66,18 @@ static t_err read_response(t_context* context) {
 	struct timeval recieve_time;
 	double round_trip_time = 0.0;
 	t_err err;
-	char host[NI_MAXHOST];
-	int getname_ret;
 
 	packet_context.sender_addr.sin_family = AF_INET;
 	packet_context.sender_addr_len = sizeof(packet_context.sender_addr);
 	err = read_socket(context, &packet_context);
 	if (err != ERR_NO_ERR)
 		return err;
-
 	ip_header = (struct ip*)packet_context.buffer;
 	ip_header_len = ip_header->ip_hl * 4;
 	if (packet_context.recv_len >= ip_header_len + (int)sizeof(struct icmphdr)) {
 		icmp_header = (struct icmphdr*)(packet_context.buffer + ip_header_len);
-		if (context->opts.num_output)
-			printf("%d bytes from %s: ", packet_context.recv_len - ip_header_len, inet_ntoa(ip_header->ip_src));
-		else {
-			getname_ret = getnameinfo((struct sockaddr*)&packet_context.sender_addr, packet_context.sender_addr_len,
-				host, sizeof(host),
-				NULL, 0,
-				NI_NAMEREQD);
-			if (getname_ret) {
-				printf("err: %s\n", gai_strerror(getname_ret));
-				printf("%d bytes from %s: ", packet_context.recv_len - ip_header_len, inet_ntoa(ip_header->ip_src));
-			}
-			else
-				printf("%d bytes from %s (%s): ", packet_context.recv_len - ip_header_len, host, inet_ntoa(context->target_addr.sin_addr));
-		}
 		if (icmp_header->type == ICMP_ECHOREPLY) {
+			print_bytes_from(&packet_context, ip_header, ip_header_len, context->opts.num_output);
 			gettimeofday(&recieve_time, NULL);
 			send_time = mutex_get_packet_info_by_seq(context, icmp_header->un.echo.sequence).send_time;
 			round_trip_time = (recieve_time.tv_sec - send_time.tv_sec) * 1000.0 + (recieve_time.tv_usec - send_time.tv_usec) / 1000.0;
@@ -83,10 +87,13 @@ static t_err read_response(t_context* context) {
 			}
 		}
 		else if (icmp_header->type == ICMP_DEST_UNREACH || icmp_header->type == ICMP_TIME_EXCEEDED) {
+			print_bytes_from(&packet_context, ip_header, ip_header_len, context->opts.num_output);
 			printf("%s\n", icmp_header->type == ICMP_DEST_UNREACH ? "Destination Net Unreachable" : "Time Exceeded");
+			if (context->opts.verbose)
+				print_dump(icmp_header->un.echo.sequence);
 		}
 		else
-			printf("Unknown ICMP type: %d\n", icmp_header->type);
+			printf("Unknown ICMP type %d\n", icmp_header->type);
 	}
 	return ERR_NO_ERR;
 }
@@ -95,10 +102,14 @@ void* receive_thread(void* arg)
 {
 	t_context* context = (t_context*)arg;
 	struct timeval select_timeout = { 0, 1000 };
-	int select_ret;
 	fd_set read_fds;
+	int select_ret;
+	int id = getpid() & 0xFFFF;
 
-	printf("FT_PING %s (%s): %d data bytes\n", context->opts.host, inet_ntoa(context->target_addr.sin_addr), context->opts.packet_size);
+	if (context->opts.verbose)
+		printf("FT_PING %s (%s): %d data bytes, id 0x%04x = %d\n", context->opts.host, inet_ntoa(context->target_addr.sin_addr), context->opts.packet_size, id, getpid());
+	else
+		printf("FT_PING %s (%s): %d data bytes\n", context->opts.host, inet_ntoa(context->target_addr.sin_addr), context->opts.packet_size);
 	while (mutex_get_running(context)) {
 		FD_ZERO(&read_fds);
 		FD_SET(context->sockfd, &read_fds);
